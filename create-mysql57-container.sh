@@ -127,13 +127,13 @@ echo "✓ Diretório criado: $DATA_DIR"
 
 # Criar container MySQL 5.7
 echo ""
-echo "[2/4] Criando container MySQL 5.7 (limites: 256MB RAM, 0.5 CPU)..."
+echo "[2/4] Criando container MySQL 5.7 (limites: 512MB RAM, 1.0 CPU)..."
 docker run -d \
     --name "$CONTAINER_NAME" \
     --restart=always \
-    --memory=256m \
-    --memory-swap=256m \
-    --cpus=0.5 \
+    --memory=512m \
+    --memory-swap=512m \
+    --cpus=1.0 \
     -p "${HOST_PORT}:3306" \
     -e MYSQL_ROOT_PASSWORD="$MYSQL_ROOT_PASSWORD" \
     -e MYSQL_DATABASE="$DATABASE_NAME" \
