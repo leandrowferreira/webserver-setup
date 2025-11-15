@@ -1,0 +1,40 @@
+# Arquivos de ambiente
+.env
+.env.*
+!.env.example
+
+# Chaves e certificados
+*.key
+*.pem
+*.crt
+*.csr
+
+# Arquivos de senha gerados pelos scripts
+mysql-*-info.txt
+/root/mysql-*.txt
+
+# Backups
+*.old/
+*.backup
+*.bak
+*.sql
+
+# Logs locais
+*.log
+
+# Diretórios de teste
+/test/
+/tmp/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# MacOS
+.DS_Store
+
+# Sistema
+Thumbs.db
