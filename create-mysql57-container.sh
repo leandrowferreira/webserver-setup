@@ -143,6 +143,7 @@ docker run -d \
     mysql:5.7 \
     --character-set-server=utf8mb4 \
     --collation-server=utf8mb4_unicode_ci \
+    --skip-ssl \
     --sql-mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"
 
 echo "✓ Container criado e iniciado com limites de recursos"
@@ -176,10 +177,11 @@ echo ""
 echo "[4/4] Configurando privilégios do usuário..."
 docker exec "$CONTAINER_NAME" mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "
     GRANT ALL PRIVILEGES ON \`${DATABASE_NAME}\`.* TO '${MYSQL_USER}'@'%';
+    GRANT ALL PRIVILEGES ON \`${DATABASE_NAME}\`.* TO '${MYSQL_USER}'@'localhost';
     FLUSH PRIVILEGES;
 " 2>/dev/null
 
-echo "✓ Privilégios configurados"
+echo "✓ Privilégios configurados para '%' e 'localhost'"
 
 # Criar arquivo de informações
 INFO_FILE="/root/mysql-${CONTAINER_NAME}-info.txt"
