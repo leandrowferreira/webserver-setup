@@ -52,7 +52,8 @@ apt-get install -y \
     supervisor \
     zbar-tools \
     acl \
-    cron
+    cron \
+    zip
 
 # Adicionar repositório Sury para múltiplas versões de PHP
 echo "[3/13] Adicionando repositório Sury..."
