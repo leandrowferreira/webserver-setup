@@ -54,11 +54,19 @@ Conjunto de scripts shell para automatizar a instalação e configuração de se
    sudo apt-get update && sudo apt-get upgrade -y
    ```
 
-9. **Certificados SSL**: Configure HTTPS com Let's Encrypt após criar sites:
+9. **Certificados SSL**: O Certbot já está instalado com renovação automática:
    ```bash
-   sudo apt-get install certbot python3-certbot-nginx
-   sudo certbot --nginx -d seusite.com
+   # Configurar SSL para um site
+   sudo certbot --nginx -d seusite.com -d www.seusite.com
+   
+   # Verificar renovação (teste)
+   sudo certbot renew --dry-run
+   
+   # Ver log de renovações automáticas
+   sudo tail -f /var/log/certbot-renew.log
    ```
+   - Renovação automática ocorre **semanalmente** (segundas-feiras às 3h)
+   - Certificados são renovados quando faltam < 30 dias para expirar
 
 10. **Monitoramento**: Configure logs e alertas na AWS CloudWatch para atividades suspeitas
 
@@ -95,6 +103,8 @@ exit
 - MariaDB Server (padrão, opcional)
 - Node.js (via NVM) + NPM
 - Supervisor (gerenciador de processos)
+- Certbot + python3-certbot-nginx (Let's Encrypt SSL)
+- UFW (firewall, desabilitado por padrão)
 - zbar-tools (leitura de códigos de barras)
 - ACL (controle avançado de permissões)
 
@@ -385,10 +395,9 @@ sudo chown -R www-data:www-data /sistemas/apps/meusite.com
 sudo chmod -R 755 /sistemas/apps/meusite.com
 ```
 
-#### 5. Configurar SSL
+#### 5. Configurar SSL (Certbot já instalado)
 
 ```bash
-sudo apt-get install certbot python3-certbot-nginx
 sudo certbot --nginx -d meusite.com -d www.meusite.com
 ```
 
@@ -589,7 +598,11 @@ docker ps -a
    - Porta 80 (HTTP)
    - Porta 443 (HTTPS)
 
-3. **SSL:** Certbot renova certificados automaticamente. Verifique:
+3. **SSL/Renovação automática:** Os certificados Let's Encrypt são renovados automaticamente:
+   - Cron job verifica renovação **semanalmente** (segundas-feiras às 3h)
+   - Certificados válidos por 90 dias, renovados aos 30 dias restantes = 60 dias de margem
+   - Log de renovações: `/var/log/certbot-renew.log`
+   - Testar renovação manualmente:
    ```bash
    sudo certbot renew --dry-run
    ```

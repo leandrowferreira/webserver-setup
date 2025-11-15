@@ -34,12 +34,12 @@ echo "Usuário: $USER_ADMIN"
 echo ""
 
 # Atualizar sistema
-echo "[1/12] Atualizando sistema..."
+echo "[1/13] Atualizando sistema..."
 apt-get update
 apt-get upgrade -y
 
 # Instalar dependências básicas
-echo "[2/12] Instalando dependências básicas..."
+echo "[2/13] Instalando dependências básicas..."
 apt-get install -y \
     apt-transport-https \
     ca-certificates \
@@ -54,17 +54,17 @@ apt-get install -y \
     acl
 
 # Adicionar repositório Sury para múltiplas versões de PHP
-echo "[3/12] Adicionando repositório Sury..."
+echo "[3/13] Adicionando repositório Sury..."
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list
 apt-get update
 
 # Instalar Nginx
-echo "[4/12] Instalando Nginx..."
+echo "[4/13] Instalando Nginx..."
 apt-get install -y nginx
 
 # Instalar PHP 5.6 e extensões
-echo "[5/12] Instalando PHP 5.6..."
+echo "[5/13] Instalando PHP 5.6..."
 apt-get install -y \
     php5.6-fpm \
     php5.6-cli \
@@ -84,7 +84,7 @@ apt-get install -y \
     php5.6-mcrypt
 
 # Instalar PHP 7.4 e extensões
-echo "[6/12] Instalando PHP 7.4..."
+echo "[6/13] Instalando PHP 7.4..."
 apt-get install -y \
     php7.4-fpm \
     php7.4-cli \
@@ -103,7 +103,7 @@ apt-get install -y \
     php7.4-readline
 
 # Instalar PHP 8.4 e extensões
-echo "[7/12] Instalando PHP 8.4..."
+echo "[7/13] Instalando PHP 8.4..."
 apt-get install -y \
     php8.4-fpm \
     php8.4-cli \
@@ -121,7 +121,7 @@ apt-get install -y \
     php8.4-readline
 
 # Instalar Composer
-echo "[8/12] Instalando Composer..."
+echo "[8/13] Instalando Composer..."
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Instalar Composer para PHP 5.6
@@ -136,7 +136,7 @@ EOF
 chmod +x /usr/local/bin/composer56
 
 # Instalar NVM e Node.js
-echo "[9/12] Instalando NVM e Node.js..."
+echo "[9/13] Instalando NVM e Node.js..."
 # Instalar NVM para root
 export NVM_DIR="/root/.nvm"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -159,7 +159,7 @@ echo "✓ NVM, Node.js e NPM instalados"
 
 # Instalar MariaDB (se solicitado)
 if [ "$INSTALL_MARIADB" = true ]; then
-    echo "[10/12] Instalando MariaDB Server..."
+    echo "[10/13] Instalando MariaDB Server..."
     apt-get install -y mariadb-server mariadb-client
     
     # Iniciar e habilitar MariaDB
@@ -169,11 +169,11 @@ if [ "$INSTALL_MARIADB" = true ]; then
     echo "✓ MariaDB instalado"
     echo "  Execute 'mysql_secure_installation' para configurar"
 else
-    echo "[10/12] Pulando instalação do MariaDB..."
+    echo "[10/13] Pulando instalação do MariaDB..."
 fi
 
 # Instalar Docker e Docker Compose
-echo "[11/12] Instalando Docker..."
+echo "[11/13] Instalando Docker..."
 # Adicionar chave GPG do Docker
 install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
@@ -192,8 +192,23 @@ apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin do
 systemctl start docker
 systemctl enable docker
 
+# Instalar Certbot para SSL
+echo "[12/13] Instalando Certbot (Let's Encrypt)..."
+apt-get install -y certbot python3-certbot-nginx
+
+# Configurar renovação automática via cron
+# Verifica semanalmente (segundas-feiras às 3h da manhã)
+# Janela de renovação: certificados válidos por 90 dias, renova aos 30 dias restantes = 60 dias de margem
+# Verificação semanal é mais do que suficiente
+echo "   Configurando renovação automática de certificados..."
+(crontab -l 2>/dev/null || true; echo "0 3 * * 1 /usr/bin/certbot renew --quiet --nginx >> /var/log/certbot-renew.log 2>&1") | crontab -
+
+echo "✓ Certbot instalado com renovação automática (segundas-feiras às 3h)"
+echo "  Para configurar SSL: sudo certbot --nginx -d seudominio.com"
+echo "  Log de renovação: /var/log/certbot-renew.log"
+
 # Instalar e configurar UFW (desabilitado por padrão)
-echo "[12/12] Instalando UFW (firewall)..."
+echo "[13/13] Instalando UFW (firewall)..."
 apt-get install -y ufw
 
 # Configurar regras padrão
@@ -248,6 +263,8 @@ echo "✓ Docker + Docker Compose"
 echo "✓ Node.js + NPM (via NVM)"
 echo "✓ Supervisor"
 echo "✓ zbar-tools"
+echo "✓ UFW (firewall, desabilitado)"
+echo "✓ Certbot (Let's Encrypt para SSL)"
 if [ "$INSTALL_MARIADB" = true ]; then
     echo "✓ MariaDB Server"
 fi
