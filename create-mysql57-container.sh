@@ -196,8 +196,6 @@ Host: localhost (ou 127.0.0.1)
 Porta: ${HOST_PORT}
 Banco: ${DATABASE_NAME}
 Usuário: ${MYSQL_USER}
-Senha: ${MYSQL_PASSWORD}
-Root Password: ${MYSQL_ROOT_PASSWORD}
 
 Recursos:
 ---------
@@ -212,11 +210,11 @@ docker logs ${CONTAINER_NAME}
 # Ver uso de recursos em tempo real
 docker stats ${CONTAINER_NAME}
 
-# Acessar MySQL CLI
-docker exec -it ${CONTAINER_NAME} mysql -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${DATABASE_NAME}
+# Acessar MySQL CLI (será solicitada a senha)
+docker exec -it ${CONTAINER_NAME} mysql -u ${MYSQL_USER} -p ${DATABASE_NAME}
 
-# Acessar como root
-docker exec -it ${CONTAINER_NAME} mysql -u root -p${MYSQL_ROOT_PASSWORD}
+# Acessar como root (será solicitada a senha)
+docker exec -it ${CONTAINER_NAME} mysql -u root -p
 
 # Parar container
 docker stop ${CONTAINER_NAME}
@@ -228,11 +226,11 @@ docker start ${CONTAINER_NAME}
 docker stop ${CONTAINER_NAME}
 docker rm ${CONTAINER_NAME}
 
-# Backup do banco
-docker exec ${CONTAINER_NAME} mysqldump -u root -p${MYSQL_ROOT_PASSWORD} ${DATABASE_NAME} > backup-${DATABASE_NAME}-\$(date +%Y%m%d).sql
+# Backup do banco (será solicitada a senha root)
+docker exec ${CONTAINER_NAME} mysqldump -u root -p ${DATABASE_NAME} > backup-${DATABASE_NAME}-\$(date +%Y%m%d).sql
 
-# Restaurar backup
-docker exec -i ${CONTAINER_NAME} mysql -u root -p${MYSQL_ROOT_PASSWORD} ${DATABASE_NAME} < backup-${DATABASE_NAME}.sql
+# Restaurar backup (será solicitada a senha root)
+docker exec -i ${CONTAINER_NAME} mysql -u root -p ${DATABASE_NAME} < backup-${DATABASE_NAME}.sql
 
 String de Conexão (PHP/Laravel):
 ---------------------------------
@@ -241,7 +239,7 @@ DB_HOST=127.0.0.1
 DB_PORT=${HOST_PORT}
 DB_DATABASE=${DATABASE_NAME}
 DB_USERNAME=${MYSQL_USER}
-DB_PASSWORD=${MYSQL_PASSWORD}
+DB_PASSWORD=<sua_senha_aqui>
 
 Diretório de dados:
 -------------------
@@ -271,9 +269,9 @@ echo "- Limite de CPU: 0.5 (50%)"
 echo ""
 echo "Arquivo de informações salvo em: $INFO_FILE"
 echo ""
-echo "Testar conexão:"
+echo "Testar conexão (será solicitada a senha):"
 echo "---------------"
-echo "docker exec -it $CONTAINER_NAME mysql -u $MYSQL_USER -p$MYSQL_PASSWORD $DATABASE_NAME"
+echo "docker exec -it $CONTAINER_NAME mysql -u $MYSQL_USER -p $DATABASE_NAME"
 echo ""
 echo "Ver uso de recursos:"
 echo "--------------------"
