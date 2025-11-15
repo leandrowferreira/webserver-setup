@@ -51,7 +51,8 @@ apt-get install -y \
     unzip \
     supervisor \
     zbar-tools \
-    acl
+    acl \
+    cron
 
 # Adicionar repositório Sury para múltiplas versões de PHP
 echo "[3/13] Adicionando repositório Sury..."
@@ -195,6 +196,10 @@ systemctl enable docker
 # Instalar Certbot para SSL
 echo "[12/13] Instalando Certbot (Let's Encrypt)..."
 apt-get install -y certbot python3-certbot-nginx
+
+# Garantir que o serviço cron está rodando
+systemctl enable cron
+systemctl start cron
 
 # Configurar renovação automática via cron
 # Verifica semanalmente (segundas-feiras às 3h da manhã)
