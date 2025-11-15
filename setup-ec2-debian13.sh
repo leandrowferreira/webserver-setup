@@ -235,9 +235,9 @@ echo "Criando estrutura de diretórios..."
 mkdir -p /sistemas/logs
 mkdir -p /sistemas/apps
 
-# Ajustar permissões
+# Ajustar permissões (grupo com escrita)
 chown -R www-data:www-data /sistemas
-chmod -R 755 /sistemas
+chmod -R 775 /sistemas
 
 # Adicionar usuário aos grupos 'docker' e 'www-data' se existir,
 # e conceder acesso livre a /sistemas mantendo a propriedade www-data:www-data.
@@ -249,6 +249,9 @@ if id -u "$USER_ADMIN" >/dev/null 2>&1; then
     # Recursivamente garantir que o usuário tenha rwx e que novos arquivos herdem a ACL
     setfacl -R -m u:"$USER_ADMIN":rwx /sistemas || true
     setfacl -R -d -m u:"$USER_ADMIN":rwx /sistemas || true
+    # Garantir que a máscara ACL permita rwx
+    setfacl -R -m m::rwx /sistemas || true
+    setfacl -R -d -m m::rwx /sistemas || true
 else
     echo "Usuário '$USER_ADMIN' não encontrado. Para adicionar depois execute: sudo usermod -aG docker,www-data $USER_ADMIN"
 fi

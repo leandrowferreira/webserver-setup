@@ -121,6 +121,10 @@ mkdir -p "$LOG_DIR"
 chown -R www-data:www-data "$SITE_DIR"
 chown -R www-data:www-data "$LOG_DIR"
 
+# Ajustar permissões com grupo write
+chmod -R 775 "$SITE_DIR"
+chmod -R 775 "$LOG_DIR"
+
 # Criar arquivo index.php de teste
 if [ "$IS_LARAVEL" = true ]; then
     cat > "$SITE_DIR/public/index.php" << 'EOF'
@@ -137,7 +141,8 @@ fi
 # Ajustar permissões
 chown -R www-data:www-data "$SITE_DIR"
 chown -R www-data:www-data "$LOG_DIR"
-chmod -R 755 "$SITE_DIR"
+chmod -R 775 "$SITE_DIR"
+chmod -R 775 "$LOG_DIR"
 
 echo "✓ Diretórios criados"
 
